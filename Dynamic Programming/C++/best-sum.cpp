@@ -96,7 +96,7 @@ int main(){
   print(path);
   path = Test.bestSum(8, {2, 3, 5}); // [3, 5]
   print(path);
-	path = Test.bestSum(8, {1, 4, 5}); // [4, 4]
+  path = Test.bestSum(8, {1, 4, 5}); // [4, 4]
   print(path);
   path = Test.bestSum(100, {1, 2, 5, 25}); // [25, 25, 25, 25]
   print(path);
