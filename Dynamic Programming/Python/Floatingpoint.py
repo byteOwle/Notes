@@ -60,9 +60,10 @@ if mode == 2:
     else: 
         integer, fraction = int(num_split[0]), num_split[1]
         integer_bin = IntToBin(integer)
-        BinFiller = "".join(['0' for i in range(0, wholN_bitSize - len(integer_bin))])
+        fracN_bitSize = 16-len(integer_bin)
+        #BinFiller = "".join(['0' for i in range(0, wholN_bitSize - len(integer_bin))])
         fraction_bin, fraction_sum, hex_rep = fixedpointToBin('.' + fraction, fracN_bitSize)
-        fixed_Bin = BinFiller+integer_bin + '.' + fraction_bin
+        fixed_Bin = integer_bin + '.' + fraction_bin
         fixed_Bin = fixed_Bin[0:bit_size]
               
         
