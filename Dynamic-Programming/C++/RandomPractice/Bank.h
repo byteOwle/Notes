@@ -23,13 +23,33 @@ struct Transaction {
     Transaction() {
         name = "WALMART";
         amount = 100.0;
-        date.setDate("01", "20", "2024");
+        date.random();
     }
-    Transaction(std::string _name, double _amount, Date _date) {
+    Transaction(const Transaction& TN) {
+        name = TN.name;
+        amount = TN.amount;
+        date = TN.date;
+    }
+    Transaction(std::string _name, double _amount) {
         name = _name;
         // balance_before = _balancebefore;
         amount = _amount;
-        date = _date;
+        date.random();
+    }
+    Transaction(std::string _name, double _amount, Date& d) {
+        name = _name;
+        // balance_before = _balancebefore;
+        amount = _amount;
+        date = d;
+    }
+    Transaction& operator=(const Transaction& rhs) {
+        if(this != &rhs) {
+            name = rhs.name;
+            amount = rhs.amount;
+            date = rhs.date;
+        }
+
+        return *this;
     }
     // void setBalanceBefore
 };
@@ -41,7 +61,12 @@ struct Account : Transaction {
     std::string account_type = (Account_T == ACCOUNT_TYPE::CHECKING ? "CHECKING" : "SAVINGS");
 
     public:
-        std::vector<Transaction> getTransactionHistory() { return transaction_history; }
+        Account() = default;
+        Account(const Account& a) {
+            balance = a.balance;
+            transaction_history = a.getTransactionHistory();
+        }        
+        std::vector<Transaction> getTransactionHistory() const { return transaction_history; }
         void deposit(Transaction& T) { 
             balance += T.amount;
             transaction_history.push_back(T);
@@ -55,7 +80,7 @@ struct Account : Transaction {
         void printaccountBalance() { 
             std::cout << "[Account]:\t" << account_type << "\n[Balance]:\t" << balance << std::endl;
         }
-        // void setType(ACCOUNT_TYPE AT) { account_type = AT; }
+        // void setType() { account_type = Account_T; }
         ACCOUNT_TYPE getType() { return Account_T; }
         Account getAccount() { return *this; }
 };
@@ -96,11 +121,12 @@ class Bank {
         Account<ACCOUNT_TYPE::CHECKING> checkings;
         Account<ACCOUNT_TYPE::SAVINGS> savings;
 
-        Account<ACCOUNT_TYPE::CHECKING> getcheckingsAccount() { return checkings; }
-        Account<ACCOUNT_TYPE::SAVINGS> getsavingsAccount() { return savings; }
+        Account<ACCOUNT_TYPE::CHECKING> getCheckingsAccount() const { return checkings; }
+        Account<ACCOUNT_TYPE::SAVINGS> getSavingsAccount() const { return savings; }
         
     public:
-        Bank(/* args */);
+        Bank();
+        Bank(const Bank& b);
         Bank(std::string bank_name);
         ~Bank();
 
@@ -112,11 +138,13 @@ class Bank {
         void setCheckingBalance(int amount);
         void setSavingsBalance(int amount);
         void printTransactionHistory();
-        // void printAccountBalance(ACCOUNT_TYPE TL);
+        void printAccountBalance(ACCOUNT_TYPE TL);
         void getCheckingBalance();
         void getSavingsBalance();
         template<ACCOUNT_TYPE type>
         Account<type> getAccount();
+
+        Bank& operator=(const Bank& rhs);
 };
 
 Bank::Bank() {
@@ -129,6 +157,11 @@ Bank::Bank(std::string bank_name) {
 
 Bank::~Bank() {
 
+}
+
+Bank::Bank(const Bank& b) {
+    checkings = b.getCheckingsAccount();
+    savings = b.getSavingsAccount();
 }
 
 void Bank::deposit(Transaction& T, ACCOUNT_TYPE AT) {
@@ -165,26 +198,28 @@ void Bank::getSavingsBalance() {
 template<ACCOUNT_TYPE type>
 Account<type> Bank::getAccount() {
     if constexpr (type == ACCOUNT_TYPE::CHECKING)
-        return getcheckingsAccount();
+        return getCheckingsAccount();
     else 
-        return getsavingsAccount();
+        return getSavingsAccount();
 }
 
 void Bank::printTransactionHistory() {
-    auto checking_th = checkings.transaction_history;
+    auto checking_th = checkings.getTransactionHistory();
     std::cout << "[TRANSACTION HISTORY FOR CHECKING ACCOUNT] " << checking_th.size() << " recorded\n";
     getCheckingBalance();
     for(auto transaction : checking_th) {
         std::cout << "[Amount]:\t" << transaction.amount << "\n[Transaction name]:\t" << transaction.name << 
-            "\n[Transaction Date]:\t"; transaction.date.printDate(); std::cout << "\n"; 
+            "\n[Transaction Date]:\t";
+            transaction.date.printDate(); std::cout << "\n"; 
     }
 
-    auto savings_th = savings.transaction_history;
+    auto savings_th = savings.getTransactionHistory();
     std::cout << "[TRANSACTION HISTORY FOR SAVINGS ACCOUNT] " << savings_th.size() << " recorded\n";
     getSavingsBalance();
     for(auto transaction : savings_th) {
         std::cout << "\n[Amount]:\t" << transaction.amount << "\n[Transaction name]:\t" << transaction.name <<
-            "\n[Transaction Date]:\t"; transaction.date.printDate();
+            "\n[Transaction Date]:\t"; 
+            transaction.date.printDate(); std::cout << "\n";
     }
 }
 
@@ -192,8 +227,11 @@ void Bank::printTransactionHistory() {
 //     balance += amount;
 // }
 
-// void Bank::operator=(const Bank& rhs) {
-//     if(this != &rhs) {
+Bank& Bank::operator=(const Bank& rhs) {
+    if(this != &rhs) {
+        checkings = rhs.getCheckingsAccount();
+        savings = rhs.getSavingsAccount();
+    }
 
-//     }
-// }
+    return *this;
+}

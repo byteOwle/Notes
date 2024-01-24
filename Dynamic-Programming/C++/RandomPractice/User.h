@@ -18,8 +18,7 @@ class User {
 
 User::User() {
     name = "Mike";
-    dob = Date("07", "06", "1998");
-    // bank = Bank();
+    dob = Date(7, 6, 1998);
     bank.setCheckingBalance(1200);
     bank.setSavingsBalance(800);
 }
