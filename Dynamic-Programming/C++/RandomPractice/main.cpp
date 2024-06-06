@@ -4,6 +4,7 @@
 #include <chrono>
 #include <random>
 #include "User.h"
+#include <string>
 
 using C = ACCOUNT_TYPE;
 
@@ -53,5 +54,26 @@ int main() {
     b1->printTransactionHistory();
     // u1.getBank().getAccount<C::CHECKING>().printaccountBalance();
     
+    // long signed int i = 0;
+
+    // std::string x = "", space = "", word = ""; 
+    // unsigned int size = 13, s = 0;
+
+    // for(int i = 1; i <= size; ++i) {
+    //     x.append("x");
+    //     if(i % 2) {
+    //         space.append((size/2) - s, ' ');
+    //         word.append(space);
+    //         word.append(x);
+    //         word.append(space);
+    //         std::cout << word << "\n";
+    //         word = "";
+    //         space = "";
+    //         ++s;
+    //     }
+    // }
+
+
+
     return 0;
 }

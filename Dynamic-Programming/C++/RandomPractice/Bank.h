@@ -139,8 +139,10 @@ class Bank {
         void setSavingsBalance(int amount);
         void printTransactionHistory();
         void printAccountBalance(ACCOUNT_TYPE TL);
-        void getCheckingBalance();
-        void getSavingsBalance();
+        void printCheckingBalance();
+        void printSavingsBalance();
+        double getSavingsAccountBalance();
+        double getCheckingsAccountBalance();
         template<ACCOUNT_TYPE type>
         Account<type> getAccount();
 
@@ -180,12 +182,20 @@ void Bank::setSavingsBalance(int amount) {
     savings.setBalance(amount);
 }
 
-void Bank::getCheckingBalance() {
+void Bank::printCheckingBalance() {
     checkings.printaccountBalance();
 }
 
-void Bank::getSavingsBalance() {
+void Bank::printSavingsBalance() {
     savings.printaccountBalance();
+}
+
+double Bank::getCheckingsAccountBalance() {
+    return checkings.getBalance();
+}
+
+double Bank::getSavingsAccountBalance() {
+    return savings.getBalance();
 }
 
 // void Bank::printAccountBalance(ACCOUNT_TYPE AT) {
@@ -206,7 +216,7 @@ Account<type> Bank::getAccount() {
 void Bank::printTransactionHistory() {
     auto checking_th = checkings.getTransactionHistory();
     std::cout << "[TRANSACTION HISTORY FOR CHECKING ACCOUNT] " << checking_th.size() << " recorded\n";
-    getCheckingBalance();
+    printCheckingBalance();
     for(auto transaction : checking_th) {
         std::cout << "[Amount]:\t" << transaction.amount << "\n[Transaction name]:\t" << transaction.name << 
             "\n[Transaction Date]:\t";
@@ -215,7 +225,7 @@ void Bank::printTransactionHistory() {
 
     auto savings_th = savings.getTransactionHistory();
     std::cout << "[TRANSACTION HISTORY FOR SAVINGS ACCOUNT] " << savings_th.size() << " recorded\n";
-    getSavingsBalance();
+    printSavingsBalance();
     for(auto transaction : savings_th) {
         std::cout << "\n[Amount]:\t" << transaction.amount << "\n[Transaction name]:\t" << transaction.name <<
             "\n[Transaction Date]:\t"; 
