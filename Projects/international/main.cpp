@@ -6,6 +6,8 @@
 #include <conio.h>
 #include <iomanip>
 #include <vector>
+#include <numeric>
+#include <cmath>
 
 namespace Keyboard
 {
@@ -111,14 +113,17 @@ namespace Keyboard
         // functional methods
         void keyMechanics()
         {
+            char c;
+            std::vector<int> storekb_before, storekb_after;
             while (!_endOp)
             {
-                char c;
+                storekb_before.push_back(kbhit());
                 if (kbhit() != 0)
                 {
                     c = getch();
                     _keyStart = true;
                 }
+                storekb_before.push_back(kbhit());
             }
         }
 
@@ -312,9 +317,84 @@ int main()
 {
     Keyboard::Keys<Keyboard::KeyboardInfo, Keyboard::KeyInfo> key_a;
 
-    key_a.init();
-    // char a, b;
-    // std::vector<char> storeHeld;
+    // key_a.init();
+    char a, b;
+    std::cout << "initializing the vector.\n";
+    std::vector<int> heldRegister(10, 0);
+    int held_threshold = 0.2 * heldRegister.size();
+    bool holding = false;
+    std::cout << "outside loop.\n";
+
+    auto start_time = std::chrono::high_resolution_clock::now();
+    while (true)
+    {
+        auto now = std::chrono::high_resolution_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_time);
+
+        // int beforeSum, afterSum = 0;
+        int hit = _kbhit();
+
+        int hold_count = 0;
+        while (_kbhit())
+        {
+
+            for (int i = 1; i < heldRegister.size(); ++i)
+            {
+                heldRegister[i - 1] = heldRegister[i];
+                // std::cout << heldRegister[i - 1] << " ";
+            }
+
+            heldRegister.back() = _kbhit() ? 1 : 0;
+
+            hold_count++;
+            // clear register
+            a = _getch();
+        }
+        // std::cout << "Left shift register.\n";
+
+        // hold_count = std::accumulate(heldRegister.begin(), heldRegister.end(), 0);
+
+        if (elapsed.count() > 100)
+        {
+            // std::cout << "kbhit - " << hit << std::endl;
+            std::cout << "hold count - " << hold_count << std::endl;
+            start_time = std::chrono::high_resolution_clock::now();
+            // std::cout << "register size - " << hold_count << "\n";
+            // for (int i = heldRegister.size() - 1; i > heldRegister.size() - held_threshold; --i)
+            // {
+            //     std::cout << heldRegister[i] << " ";
+            // }
+            // if (hold_count > 0)
+            //     std::cout << "\n";
+        }
+
+        // std::cout << "check threshold.\n";
+        if (hold_count >= held_threshold)
+        {
+            holding = true;
+            std::cout << "holding.\n";
+        }
+        else
+        {
+            holding = false;
+        }
+
+        // for (int i = 0; i < heldRegister.size(); ++i)
+        // {
+        //     heldRegister[i] = 0;
+        //     // std::cout << heldRegister[i - 1] << " ";
+        // }
+        std::this_thread::sleep_for(std::chrono::milliseconds(15));
+        // if (_kbhit())
+        // {
+        //     // std::cout << "hit - " << hit << std::endl;
+        //     // std::cout << "before size: " << storekb_before.size() << std::endl;
+        //     // std::cout << "after size: " << storekb_after.size() << std::endl;
+        //     a = _getch();
+        //     // std::cout << "collected character\n";
+        //     // _keyStart = true;
+        // }
+    }
 
     // while (true)
     // {
@@ -328,6 +408,7 @@ int main()
 
     //     // std::cout << "released\n";
     //     bool pressed, holding, released = false;
+    //     // std::cout << "hit - " << kbhit() << std::endl;
     //     if (kbhit() != 0)
     //     {
     //         std::cout << "hit - " << kbhit() << std::endl;
@@ -348,7 +429,7 @@ int main()
     //         //     storeHeld.clear();
     //         //     std::cout << "released" << std::endl;
     //         //     // a = getch();
-    //             std::cout << "hit - " << kbhit() << std::endl;
+    //         std::cout << "hit - " << kbhit() << std::endl;
     //         //     released = true;
     //         //     holding = false;
     //         //     pressed = false;
